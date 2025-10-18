@@ -2,6 +2,15 @@ using UnityEngine;
 
 public class IAAgent : MonoBehaviour
 {
+    [System.Serializable]
+    public class spell
+    {
+        public float range;
+        public float damage;
+        public float cooldown;
+        public float time;
+    }
+
     public enum State
     {
         Idle,
@@ -18,8 +27,12 @@ public class IAAgent : MonoBehaviour
     [SerializeField] float targetDistance;
 
     [SerializeField] float speed = 5f;
-
     [SerializeField] State state = State.Idle;
+
+    [SerializeField] spell[] spells;
+
+    private bool MoveToAttack;
+    private spell spellForMove;
 
     void Update()
     {
@@ -69,18 +82,7 @@ public class IAAgent : MonoBehaviour
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, stopChaseDistance);
     }
-
-    [System.Serializable]
-    public class spell
-    {
-        public float range;
-        public float damage;
-        public float cooldown;
-        public float time;
-    }
-
-    public spell[] spells;
-
+     
     private void Start()
     {
         spells = new spell[3];
@@ -103,8 +105,6 @@ public class IAAgent : MonoBehaviour
         distanceAttackMin = Mathf.Max(min, max);
     }
 
-    bool MoveToAttack;
-    spell spellForMove;
     private void Attack()
     {
         void runAttack(spell spell)
@@ -152,9 +152,8 @@ public class IAAgent : MonoBehaviour
     {
         if (patrolTimer <= 0)
         {
-            // Patrol logic here
             Vector3 randomDir = UnityEngine.Random.insideUnitSphere * 5f;
-            randomDir.y = 0; // Keep on the same horizontal plane
+            randomDir.y = 0;
 
             patrolPoint = transform.position + randomDir;
             patrolTimer = patrolCooldown;
