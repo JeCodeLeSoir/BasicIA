@@ -3,7 +3,7 @@ using UnityEngine;
 public class IAAgent : MonoBehaviour
 {
     [System.Serializable]
-    public class spell
+    public class Spell
     {
         public float range;
         public float damage;
@@ -29,10 +29,10 @@ public class IAAgent : MonoBehaviour
     [SerializeField] float speed = 5f;
     [SerializeField] State state = State.Idle;
 
-    [SerializeField] spell[] spells;
+    [SerializeField] Spell[] spells;
 
     private bool MoveToAttack;
-    private spell spellForMove;
+    private Spell spellForMove;
 
     void Update()
     {
@@ -85,11 +85,11 @@ public class IAAgent : MonoBehaviour
      
     private void Start()
     {
-        spells = new spell[3];
+        spells = new Spell[3];
         
-        spells[0] = new spell() { range = 1f, damage = 10f, cooldown = 2f, time = 0f };
-        spells[1] = new spell() { range = 3f, damage = 20f, cooldown = 5f, time = 0f };
-        spells[2] = new spell() { range = 4f, damage = 30f, cooldown = 10f, time = 0f };
+        spells[0] = new Spell() { range = 1f, damage = 10f, cooldown = 2f, time = 0f };
+        spells[1] = new Spell() { range = 3f, damage = 20f, cooldown = 5f, time = 0f };
+        spells[2] = new Spell() { range = 4f, damage = 30f, cooldown = 10f, time = 0f };
 
         float min = 0;
         float max = 0;
@@ -107,7 +107,7 @@ public class IAAgent : MonoBehaviour
 
     private void Attack()
     {
-        void runAttack(spell spell)
+        void runAttack(Spell spell)
         {
             MoveToAttack = false;
             spell.time = spell.cooldown;
