@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class IAAgent : MonoBehaviour
@@ -16,23 +17,26 @@ public class IAAgent : MonoBehaviour
         Idle,
         Patrol,
         Chase,
-        Attack
+        Attack,
+        Flee
     }
 
-    [SerializeField] Transform target;
-    [SerializeField] float triggerDistance = 10f;
-    [SerializeField] float minStopChaseDistance = 1f;
-    [SerializeField] float stopChaseDistance = 15f;
-    [SerializeField] float distanceAttackMin;
-    [SerializeField] float targetDistance;
+    [SerializeField] Transform target; // Cible
+    [SerializeField] float triggerDistance = 10f; // Distance de detection de la cible
+    [SerializeField] float minStopChaseDistance = 1f; // Distance minimale pour arreter de poursuivre
+    [SerializeField] float stopChaseDistance = 15f; // Distance pour arreter de poursuivre
+    [SerializeField] float distanceAttackMin; // Distance minimale d'attaque
+    [SerializeField] float targetDistance; // Distance par rapport a la cible
+    [SerializeField] float secureDistance = 15f; // Distance de securite en fuyant
+    [SerializeField] float speed = 5f; // Vitesse
+    [SerializeField] State state = State.Idle; // Etat
 
-    [SerializeField] float speed = 5f;
-    [SerializeField] State state = State.Idle;
+    [SerializeField] bool isfleeing = false; // Fuir le combat
 
-    [SerializeField] Spell[] spells;
+    [SerializeField] Spell[] spells; // Sorts disponibles
 
-    private bool MoveToAttack;
-    private Spell spellForMove;
+    private bool MoveToAttack; // Se deplacer pour attaquer
+    private Spell spellForMove; // Sort utilise pour se deplacer vers la cible
 
     void Update()
     {
@@ -54,9 +58,22 @@ public class IAAgent : MonoBehaviour
             case State.Attack:
                 Attack();
                 break;
+            case State.Flee:
+                Flee();
+                break;
         }
 
         ResetCooldowns();
+    }
+
+    private void Flee()
+    {
+        Vector3 directionAwayFromTarget = (transform.position - target.position).normalized;
+        transform.position += directionAwayFromTarget * speed * Time.deltaTime;
+        if (targetDistance > secureDistance)
+        {
+            state = State.Idle;
+        }
     }
 
     private void ResetCooldowns()
@@ -180,11 +197,18 @@ public class IAAgent : MonoBehaviour
 
     private void TargetTrigger()
     {
-        if(state == State.Attack || state == State.Chase)
-            return;
+        if (isfleeing) 
+        {
+            if(targetDistance < triggerDistance)
+                state = State.Flee;
 
-        float distanceToTarget = targetDistance;
-        if (distanceToTarget < triggerDistance && state != State.Chase)
+            return;
+        }
+
+        if (state == State.Attack || state == State.Chase)
+            return;
+ 
+        if (targetDistance < triggerDistance && state != State.Chase)
             state = State.Chase;
     }
 }
