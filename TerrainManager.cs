@@ -32,7 +32,8 @@ public class TerrainManager : MonoBehaviour
 
         return null;
     }
-
+    
+#if UNITY_EDITOR
     public void Start()
     {
         Terrain[] terrains = Terrain.activeTerrains;
@@ -73,6 +74,7 @@ public class TerrainManager : MonoBehaviour
 
         return dst;
     }
+#endif
 
     public struct DataTree
     {
